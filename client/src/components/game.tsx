@@ -5,6 +5,7 @@ import { Chess } from "chess.js";
 import Connection from "../Utils/connection";
 import { move } from "../Utils/types";
 
+const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
 const Game: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomId, setRoomId] = useState<string>("");
@@ -35,7 +36,7 @@ const Game: React.FC = () => {
   };
 
   const connectToServer = () => {
-    const newSocket = new Connection("http://localhost:9000").socket;
+    const newSocket = new Connection(serverUrl).socket;
 
     newSocket.on(
       "game-start",
@@ -71,7 +72,7 @@ const Game: React.FC = () => {
 
     newSocket.on("disconnect", () => {
       newSocket.emit("exiting-from-game", roomId);
-      console.log(`Disconnected from room ${roomId}`);
+      alert(`Disconnected from room ${roomId} because opponent exited`);
     });
     setSocket(newSocket);
   };

@@ -73,7 +73,6 @@ const ChessBoard = ({
     } | null
   ) => {
     const square = convertToChessNotation(i, j);
-    console.log(`Square clicked: ${square}`);
 
     if (from === "" && board[i][j]?.square == null) {
       console.log("Select valid from square");
@@ -81,7 +80,6 @@ const ChessBoard = ({
     }
     if (from === "" && el) {
       setAttackerSquare(getAttackingSquares(el.type, el.color, i, j));
-      console.log(getAttackingSquares(el.type, el.color, i, j));
 
       setFrom(square);
     } else {
