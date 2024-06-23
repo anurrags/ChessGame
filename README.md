@@ -3,7 +3,7 @@
 
 Enjoy playing chess, try this chess game created using react.js, node.js and typescript.
 
-We have used chess.js npn library(Copyright (c) 2023, Jeff Hlywa (jhlywa@gmail.com))
+We have used chess.js node library(Copyright (c) 2023, Jeff Hlywa (jhlywa@gmail.com))
 
 ## Installation
 
