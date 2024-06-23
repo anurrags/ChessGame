@@ -61,6 +61,7 @@ class GameManager {
       if (gameRoom) {
         console.log(`Game Room ${roomId} closed`);
         gameRoom.exitGame(new User(socket));
+        this.games.delete(roomId);
         this.users.delete(gameRoom.player1.socket.id);
         if (gameRoom.player2) this.users.delete(gameRoom.player2.socket.id);
       }

@@ -70,3 +70,42 @@
   color: #000;
   background-color: rgb(218, 255, 225);
 }
+
+@media screen and (max-width: 1080px) {
+  .chessboard-container {
+    margin-top: 0;
+  }
+  .game-container {
+    flex-direction: column-reverse;
+    padding-top: 4rem;
+    gap: 3rem;
+  }
+}
+@media (max-width: 680px) {
+  .chessboard-container {
+    margin: 0 2rem;
+  }
+  .chessboard-square {
+    height: 3rem;
+    width: 3rem;
+  }
+  .chess-piece {
+    width: 2.5rem;
+  }
+  .header-heading {
+    font-size: 2rem;
+  }
+  .game-container {
+    padding: 0 1rem;
+    padding-top: 2rem;
+    gap: 1rem;
+  }
+  .game-btn {
+    padding: 0.5rem 4rem;
+    font-size: 1rem;
+  }
+  .disabled-btn {
+    padding: 0.5rem 4rem;
+    font-size: 1rem;
+  }
+}
