@@ -1,0 +1,32 @@
+.chessboard-container {
+  margin: 5rem;
+  display: flex;
+  justify-content: center;
+}
+.chessboard-inner-container {
+  border: 1px solid #000;
+}
+.chessboard-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: fit-content;
+}
+
+.chessboard-square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5rem;
+  width: 5rem;
+  cursor: pointer;
+}
+
+.attack-square {
+  background-color: #ff6060;
+}
+.dark-square {
+  background-color: rgb(1, 119, 24);
+}
+.light-square {
+  background-color: rgb(218, 255, 225);
+}
