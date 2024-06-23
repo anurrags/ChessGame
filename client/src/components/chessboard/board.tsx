@@ -110,6 +110,7 @@ const ChessBoard = ({
                   >
                     {el?.type && (
                       <img
+                        className="chess-piece"
                         src={`/chessPiece/${el.color === "w" ? "w" : "b"}${
                           el.type
                         }.png`}
