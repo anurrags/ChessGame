@@ -5,7 +5,7 @@ import { Chess } from "chess.js";
 import Connection from "../Utils/connection";
 import { move } from "../Utils/types";
 
-const serverUrl = "http://localhost:9000";
+const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
 const Game: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomId, setRoomId] = useState<string>("");
