@@ -57,7 +57,6 @@ const ChessBoard = ({
   } | null)[][];
   makeMove: ({ from, to }: { from: string; to: string }) => void;
 }) => {
-  const [to, setTo] = useState<string>("");
   const [from, setFrom] = useState<string>("");
   const [attackSquare, setAttackerSquare] = useState<chessSquare[] | null>(
     null
@@ -114,6 +113,7 @@ const ChessBoard = ({
                         src={`/chessPiece/${el.color === "w" ? "w" : "b"}${
                           el.type
                         }.png`}
+                        alt={el.type}
                       />
                     )}
                   </div>

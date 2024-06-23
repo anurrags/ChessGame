@@ -19,7 +19,6 @@ class GameManager {
   addUser(user: Socket) {
     const player = new User(user);
     user.emit("connection-message", "Connected to the server");
-
     if (this.pendingRoomId === null) {
       this.pendingRoomId = randomUUID();
       this.users.set(player.socket.id, this.pendingRoomId);

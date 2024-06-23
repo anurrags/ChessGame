@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import ChessBoard from "./chessboard/board";
 import { Chess } from "chess.js";
 import Connection from "../Utils/connection";
 import { move } from "../Utils/types";
 
-const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
+const serverUrl = "http://localhost:9000";
 const Game: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [color, setColor] = useState<string>("");
   const [chess, setChess] = useState<Chess>(new Chess());
   const [board, setBoard] = useState(chess.board());
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [searching, setSearching] = useState<boolean>(false);
 
   const makeMove = ({ from, to }: { from: string; to: string }) => {
+    if (!gameStarted) {
+      alert("Game is not started");
+      return;
+    }
     if (chess.turn() !== color) {
       console.log("Not your turn");
       return;
@@ -37,11 +43,13 @@ const Game: React.FC = () => {
 
   const connectToServer = () => {
     const newSocket = new Connection(serverUrl).socket;
-
+    setSearching(true);
     newSocket.on(
       "game-start",
       ({ color, roomId }: { color: string; roomId: string }) => {
         console.log(`Game started. You are ${color}`);
+        setGameStarted(true);
+        setSearching(false);
         setColor(color);
         setRoomId(roomId);
         chess.reset();
@@ -50,7 +58,9 @@ const Game: React.FC = () => {
     );
 
     newSocket.on("game-over", (message: string) => {
+      setGameStarted(false);
       alert(message);
+
       newSocket.disconnect();
     });
     newSocket.on("move", (move: move) => {
@@ -71,6 +81,8 @@ const Game: React.FC = () => {
     });
 
     newSocket.on("disconnect", () => {
+      setGameStarted(false);
+      setColor("");
       newSocket.emit("exiting-from-game", roomId);
       alert(`Disconnected from room ${roomId} because opponent exited`);
     });
@@ -94,12 +106,26 @@ const Game: React.FC = () => {
 
   return (
     <div>
-      <h1>Chess Game</h1>
+      <h1 className="header-heading">Chess Game</h1>
 
-      <button onClick={connectToServer}>Connect</button>
-      <button onClick={disConnectToServer}>Disconnect</button>
-
-      <ChessBoard board={board} makeMove={makeMove} />
+      <div className="game-container">
+        <ChessBoard board={board} makeMove={makeMove} />
+        <div className="game-btn-div">
+          {!gameStarted ? (
+            <button
+              className={`${searching ? "disabled-btn" : "game-btn"} `}
+              onClick={connectToServer}
+              disabled={searching}
+            >
+              {searching ? "Waiting for opponent" : "Play"}
+            </button>
+          ) : (
+            <button className="game-btn" onClick={disConnectToServer}>
+              Exit
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

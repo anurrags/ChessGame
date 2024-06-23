@@ -30,3 +30,43 @@
 .light-square {
   background-color: rgb(218, 255, 225);
 }
+
+/* Game.tsx stying */
+.header-heading {
+  font-size: 3rem;
+  margin: 0;
+  color: #fff;
+}
+.game-container {
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.game-btn-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+.game-btn {
+  padding: 1rem 8rem;
+  font-size: 1.5rem;
+  color: #fff;
+  background-color: rgb(1, 119, 24);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.disabled-btn {
+  padding: 1rem 8rem;
+  font-size: 1.5rem;
+  color: #000000;
+  background-color: rgb(156, 156, 156);
+  border: none;
+  border-radius: 5px;
+}
+.game-btn:hover {
+  color: #000;
+  background-color: rgb(218, 255, 225);
+}
