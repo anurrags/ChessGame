@@ -1,54 +1,15 @@
-import { Square, PieceSymbol, Color } from "chess.js";
+import { Square, PieceSymbol, Color, Chess } from "chess.js";
 import "./board.css";
 import { useState } from "react";
-
-interface chessSquare {
-  row: number;
-  col: number;
-}
-const getAttackingSquares = (
-  piece: string,
-  color: string,
-  row: number,
-  col: number
-): chessSquare[] | null => {
-  const attackingSquares: chessSquare[] = [];
-  switch (piece) {
-    case "p":
-      switch (color) {
-        case "b":
-          if (row === 1) return null;
-          if (row === 7) {
-            attackingSquares.push({ row: row - 1, col }, { row: row - 2, col });
-          } else {
-            attackingSquares.push({ row: row - 1, col });
-          }
-          break;
-        case "w":
-          if (row === 8) return null;
-          if (row === 2) {
-            attackingSquares.push({ row: row + 1, col }, { row: row + 2, col });
-          } else {
-            attackingSquares.push({ row: row + 1, col });
-          }
-          break;
-        default:
-          return null;
-      }
-      break;
-  }
-  return attackingSquares;
-};
-
-const convertToChessNotation = (row: number, col: number): string => {
-  const chessColumn = String.fromCharCode("a".charCodeAt(0) + col);
-  const chessRow = 8 - row;
-  return `${chessColumn}${chessRow}`;
-};
+import { chessSquare, possibleMoves } from "../../Utils/types";
+import { getAttackingSquares } from "../../Utils/getAttackingSquare";
+import { convertToChessNotation } from "../../Utils/getChessNotation";
 
 const ChessBoard = ({
   board,
   makeMove,
+  chess,
+  color,
 }: {
   board: ({
     square: Square;
@@ -56,8 +17,13 @@ const ChessBoard = ({
     color: Color;
   } | null)[][];
   makeMove: ({ from, to }: { from: string; to: string }) => void;
+  chess: Chess;
+  color: string;
 }) => {
   const [from, setFrom] = useState<string>("");
+  const [movableSquare, setMovableSquare] = useState<chessSquare[] | null>(
+    null
+  );
   const [attackSquare, setAttackerSquare] = useState<chessSquare[] | null>(
     null
   );
@@ -71,18 +37,29 @@ const ChessBoard = ({
       color: Color;
     } | null
   ) => {
-    const square = convertToChessNotation(i, j);
+    if (chess.turn() !== color) return;
+    const square = convertToChessNotation(i, j) as Square;
 
     if (from === "" && board[i][j]?.square == null) {
       console.log("Select valid from square");
       return;
     }
     if (from === "" && el) {
-      setAttackerSquare(getAttackingSquares(el.type, el.color, i, j));
-
+      if (el.color !== (color as Color)) return;
+      const possibleMoves: possibleMoves = getAttackingSquares(
+        {
+          piece: el.type,
+          color: el.color,
+          position: { row: i, col: j },
+        },
+        chess
+      );
+      setMovableSquare(possibleMoves.movableSquare);
+      setAttackerSquare(possibleMoves.attackingSquares);
       setFrom(square);
     } else {
       setFrom("");
+      setMovableSquare(null);
       setAttackerSquare(null);
       const to = square;
       makeMove({ from, to });
@@ -102,9 +79,17 @@ const ChessBoard = ({
                     className={`chessboard-square ${
                       (i + j) & 1 ? "light" : "dark"
                     }-square ${
-                      attackSquare?.find((sq) => sq.row === i && sq.col === j)
+                      movableSquare?.some((sq) => sq.row === i && sq.col === j)
+                        ? "moveable-square"
+                        : null
+                    } ${
+                      from === convertToChessNotation(i, j)
+                        ? "active-square"
+                        : null
+                    } ${
+                      attackSquare?.some((sq) => sq.row === i && sq.col === j)
                         ? "attack-square"
-                        : "normal-square"
+                        : null
                     }`}
                     onClick={(e) => handleOnSquareClick(i, j, el)}
                   >

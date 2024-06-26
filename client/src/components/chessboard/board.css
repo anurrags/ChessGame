@@ -19,11 +19,9 @@
   height: 5rem;
   width: 5rem;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
-.attack-square {
-  background-color: #ff6060;
-}
 .dark-square {
   background-color: rgb(1, 119, 24);
 }
@@ -31,6 +29,35 @@
   background-color: rgb(218, 255, 225);
 }
 
+.active-square {
+  background: rgb(91, 255, 100);
+  background: radial-gradient(
+    circle,
+    rgba(91, 255, 100, 1) 7%,
+    rgba(161, 255, 203, 1) 24%,
+    rgba(91, 255, 100, 1) 73%
+  );
+}
+.moveable-square {
+  background: rgb(255, 91, 91);
+  background: radial-gradient(
+    circle,
+    rgba(255, 91, 91, 1) 7%,
+    rgba(255, 161, 161, 1) 41%,
+    rgba(255, 91, 91, 1) 73%
+  );
+  border: 0.5px solid #131313;
+}
+.attack-square {
+  background: rgb(91, 181, 255);
+  background: radial-gradient(
+    circle,
+    rgba(91, 181, 255, 1) 13%,
+    rgba(46, 73, 255, 1) 43%,
+    rgba(91, 118, 255, 1) 73%
+  );
+  border: 0.5px solid #131313;
+}
 /* Game.tsx stying */
 .header-heading {
   font-size: 3rem;

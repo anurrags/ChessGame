@@ -109,7 +109,12 @@ const Game: React.FC = () => {
       <h1 className="header-heading">Chess Game</h1>
 
       <div className="game-container">
-        <ChessBoard board={board} makeMove={makeMove} />
+        <ChessBoard
+          board={board}
+          makeMove={makeMove}
+          chess={chess}
+          color={color}
+        />
         <div className="game-btn-div">
           {!gameStarted ? (
             <button
