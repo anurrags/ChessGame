@@ -93,6 +93,7 @@ const ChessBoard = ({
                     }`}
                     onClick={(e) => handleOnSquareClick(i, j, el)}
                   >
+                    {j === 0 && <p className={`col-symbol `}>{8 - i}</p>}
                     {el?.type && (
                       <img
                         className="chess-piece"
@@ -101,6 +102,11 @@ const ChessBoard = ({
                         }.png`}
                         alt={el.type}
                       />
+                    )}
+                    {i === 7 && (
+                      <p className={`row-symbol `}>
+                        {String.fromCharCode("a".charCodeAt(0) + j)}
+                      </p>
                     )}
                   </div>
                 );

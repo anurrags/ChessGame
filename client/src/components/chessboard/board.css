@@ -13,6 +13,7 @@
 }
 
 .chessboard-square {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,11 +22,29 @@
   cursor: pointer;
   box-sizing: border-box;
 }
-
+.col-symbol {
+  color: inherit;
+  position: absolute;
+  top: -1rem;
+  left: 0.4rem;
+  font-size: 1rem;
+  font-weight: 900;
+  z-index: 1000;
+}
+.row-symbol {
+  position: absolute;
+  bottom: -0.8rem;
+  right: 0.2rem;
+  font-size: 1rem;
+  font-weight: 900;
+  z-index: 1000;
+}
 .dark-square {
   background-color: rgb(1, 119, 24);
+  color: #fff;
 }
 .light-square {
+  color: rgb(1, 119, 24);
   background-color: rgb(218, 255, 225);
 }
 
@@ -134,5 +153,15 @@
   .disabled-btn {
     padding: 0.5rem 4rem;
     font-size: 1rem;
+  }
+  .row-symbol {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .col-symbol {
+    top: -0.7rem;
+    left: 0.2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
   }
 }
