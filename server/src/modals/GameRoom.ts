@@ -43,7 +43,11 @@ class GameRoom {
 
   makeMove(move: move) {
     try {
-      this.chess.move({ from: move.from, to: move.to });
+      this.chess.move({
+        from: move.from,
+        to: move.to,
+        promotion: move.promotion,
+      });
       if (move.user === this.player1.socket.id && !(this.moves.length & 1)) {
         this.player2?.socket.emit("move", move);
       } else if (

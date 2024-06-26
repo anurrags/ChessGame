@@ -1,6 +1,7 @@
 export interface move {
   from: string;
   to: string;
+  promotion?: string;
   roomId: string;
   user: string;
 }

@@ -16,10 +16,23 @@ const ChessBoard = ({
     type: PieceSymbol;
     color: Color;
   } | null)[][];
-  makeMove: ({ from, to }: { from: string; to: string }) => void;
+  makeMove: ({
+    from,
+    to,
+    promotion,
+  }: {
+    from: string;
+    to: string;
+    promotion?: string;
+  }) => void;
   chess: Chess;
   color: string;
 }) => {
+  const [pieceToMove, setPieceToMove] = useState<{
+    square: Square;
+    type: PieceSymbol;
+    color: Color;
+  } | null>(null);
   const [from, setFrom] = useState<string>("");
   const [movableSquare, setMovableSquare] = useState<chessSquare[] | null>(
     null
@@ -56,13 +69,25 @@ const ChessBoard = ({
       );
       setMovableSquare(possibleMoves.movableSquare);
       setAttackerSquare(possibleMoves.attackingSquares);
+      setPieceToMove(el);
       setFrom(square);
     } else {
       setFrom("");
       setMovableSquare(null);
       setAttackerSquare(null);
       const to = square;
-      makeMove({ from, to });
+      if (pieceToMove?.type === "p" && pieceToMove?.color === "w" && i === 0) {
+        makeMove({ from, to, promotion: "q" });
+      } else if (
+        pieceToMove?.type === "p" &&
+        pieceToMove?.color === "b" &&
+        i === 7
+      ) {
+        makeMove({ from, to, promotion: "q" });
+      } else {
+        makeMove({ from, to });
+      }
+      setPieceToMove(null);
     }
   };
 

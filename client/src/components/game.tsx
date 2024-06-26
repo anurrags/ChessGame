@@ -15,7 +15,15 @@ const Game: React.FC = () => {
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
 
-  const makeMove = ({ from, to }: { from: string; to: string }) => {
+  const makeMove = ({
+    from,
+    to,
+    promotion,
+  }: {
+    from: string;
+    to: string;
+    promotion?: string;
+  }) => {
     if (!gameStarted) {
       alert("Game is not started");
       return;
@@ -25,12 +33,13 @@ const Game: React.FC = () => {
       return;
     }
     try {
-      const move = chess.move({ from, to });
+      const move = chess.move({ from, to, promotion });
       if (move) {
         setBoard(chess.board());
         socket?.emit("move", {
           from: from,
           to: to,
+          promotion: promotion,
           roomId: roomId,
           user: socket.id,
         });
@@ -65,7 +74,11 @@ const Game: React.FC = () => {
     });
     newSocket.on("move", (move: move) => {
       try {
-        const moved = chess.move({ from: move.from, to: move.to });
+        const moved = chess.move({
+          from: move.from,
+          to: move.to,
+          promotion: move.promotion,
+        });
         if (moved) {
           setBoard(chess.board());
 
