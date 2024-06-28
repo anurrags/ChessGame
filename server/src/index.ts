@@ -17,6 +17,7 @@ app.get("/", (req, res) => {
 });
 
 const gameManager = new GameManager();
+
 io.on("connection", (socket: Socket) => {
   console.log(`New user connected: ${socket.id}`);
   gameManager.addUser(socket);

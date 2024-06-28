@@ -17,6 +17,7 @@ class GameManager {
   }
 
   addUser(user: Socket) {
+    console.log(`New user added by gameManager: ${user.id}`);
     const player = new User(user);
     user.emit("connection-message", "Connected to the server");
     if (this.pendingRoomId === null) {
