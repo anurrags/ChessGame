@@ -65,6 +65,7 @@ class GameManager {
         this.games.delete(roomId);
         this.users.delete(gameRoom.player1.socket.id);
         if (gameRoom.player2) this.users.delete(gameRoom.player2.socket.id);
+        this.pendingRoomId = null;
       }
       this.games.delete(roomId);
     }
