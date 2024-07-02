@@ -11,6 +11,13 @@
   grid-template-columns: repeat(8, 1fr);
   width: fit-content;
 }
+.chessboard-rotated {
+  transform: rotate(180deg);
+}
+
+.chessboard-rotated .chessboard-row {
+  transform: rotate(180deg);
+}
 
 .chessboard-square {
   position: relative;

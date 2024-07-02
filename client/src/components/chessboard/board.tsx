@@ -14,6 +14,7 @@ const ChessBoard = ({
   socket,
   kingCheckSquare,
   roomId,
+  gameStarted,
 }: {
   board: ({
     square: Square;
@@ -34,6 +35,7 @@ const ChessBoard = ({
   socket: Socket | null;
   kingCheckSquare: chessSquare | null;
   roomId: string;
+  gameStarted: boolean;
 }) => {
   const [pieceToMove, setPieceToMove] = useState<{
     square: Square;
@@ -139,8 +141,17 @@ const ChessBoard = ({
     setChecksquare(kingCheckSquare);
   }, [kingCheckSquare]);
 
+  useEffect(() => {
+    if (!gameStarted) {
+      setChecksquare(null);
+    }
+  }, [gameStarted]);
   return (
-    <div className="chessboard-container">
+    <div
+      className={`chessboard-container ${
+        color === "b" ? "chessboard-rotated" : ""
+      }`}
+    >
       <div className="chessboard-inner-container">
         {board.map((row, i) => {
           return (
@@ -181,11 +192,17 @@ const ChessBoard = ({
                         alt={el.type}
                       />
                     )}
-                    {i === 7 && (
-                      <p className={`row-symbol `}>
-                        {String.fromCharCode("a".charCodeAt(0) + j)}
-                      </p>
-                    )}
+                    {color === "b"
+                      ? i === 0 && (
+                          <p className={`row-symbol`}>
+                            {String.fromCharCode("a".charCodeAt(0) + j)}
+                          </p>
+                        )
+                      : i === 7 && (
+                          <p className={`row-symbol`}>
+                            {String.fromCharCode("a".charCodeAt(0) + j)}
+                          </p>
+                        )}
                   </div>
                 );
               })}

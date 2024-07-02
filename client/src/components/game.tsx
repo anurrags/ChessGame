@@ -56,7 +56,6 @@ const Game: React.FC = () => {
           user: socket.id,
         });
       }
-      console.log(`Move from ${from} to ${to}`);
     } catch (error) {
       console.log(error);
     }
@@ -73,6 +72,7 @@ const Game: React.FC = () => {
         setSearching(false);
         setColor(color);
         setRoomId(roomId);
+        setKingCheckSquare(null);
         chess.reset();
         setBoard(chess.board());
       }
@@ -80,6 +80,7 @@ const Game: React.FC = () => {
 
     newSocket.on("game-over", (message: string) => {
       setGameStarted(false);
+      setKingCheckSquare(null);
       alert(message);
       newSocket.disconnect();
     });
@@ -104,7 +105,6 @@ const Game: React.FC = () => {
         if (moved) {
           audio.play();
           setBoard(chess.board());
-          console.log(`Move ${move.from} to ${move.to}`);
         }
       } catch (error) {
         console.log(error);
@@ -142,6 +142,12 @@ const Game: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!gameStarted) {
+      setKingCheckSquare(null);
+    }
+  }, [gameStarted]);
+
+  useEffect(() => {
     return () => {
       if (socket) {
         socket.disconnect();
@@ -162,6 +168,7 @@ const Game: React.FC = () => {
           socket={socket}
           kingCheckSquare={kingCheckSquare}
           roomId={roomId}
+          gameStarted={gameStarted}
         />
         <div className="game-btn-div">
           {!gameStarted ? (
