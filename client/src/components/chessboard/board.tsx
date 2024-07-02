@@ -1,15 +1,19 @@
 import { Square, PieceSymbol, Color, Chess } from "chess.js";
 import "./board.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { chessSquare, possibleMoves } from "../../Utils/types";
 import { getAttackingSquares } from "../../Utils/getAttackingSquare";
 import { convertToChessNotation } from "../../Utils/getChessNotation";
+import { Socket } from "socket.io-client";
 
 const ChessBoard = ({
   board,
   makeMove,
   chess,
   color,
+  socket,
+  kingCheckSquare,
+  roomId,
 }: {
   board: ({
     square: Square;
@@ -27,6 +31,9 @@ const ChessBoard = ({
   }) => void;
   chess: Chess;
   color: string;
+  socket: Socket | null;
+  kingCheckSquare: chessSquare | null;
+  roomId: string;
 }) => {
   const [pieceToMove, setPieceToMove] = useState<{
     square: Square;
@@ -40,6 +47,7 @@ const ChessBoard = ({
   const [attackSquare, setAttackerSquare] = useState<chessSquare[] | null>(
     null
   );
+  const [checkSquare, setChecksquare] = useState<chessSquare | null>(null);
 
   const handleOnSquareClick = (
     i: number,
@@ -72,9 +80,14 @@ const ChessBoard = ({
       setPieceToMove(el);
       setFrom(square);
     } else {
-      setFrom("");
-      setMovableSquare(null);
-      setAttackerSquare(null);
+      if (checkSquare) {
+        socket?.emit("check-over", {
+          row: checkSquare.row,
+          col: checkSquare.col,
+          roomId: roomId,
+        });
+        setChecksquare(null);
+      }
       const to = square;
       if (pieceToMove?.type === "p" && pieceToMove?.color === "w" && i === 0) {
         makeMove({ from, to, promotion: "q" });
@@ -87,9 +100,44 @@ const ChessBoard = ({
       } else {
         makeMove({ from, to });
       }
+
+      if (pieceToMove) {
+        const nextPossibleAttackingSquares: chessSquare[] = getAttackingSquares(
+          {
+            piece: pieceToMove.type,
+            color: pieceToMove.color,
+            position: { row: i, col: j },
+          },
+          chess
+        ).attackingSquares;
+
+        nextPossibleAttackingSquares.map((sq) => {
+          if (
+            chess.get(convertToChessNotation(sq.row, sq.col) as Square).type ===
+            "k"
+          ) {
+            console.log("king is check");
+
+            kingCheckSquare = { row: sq.row, col: sq.col };
+            setChecksquare(kingCheckSquare);
+            socket?.emit("king-check", {
+              row: sq.row,
+              col: sq.col,
+              roomId: roomId,
+            });
+          } else kingCheckSquare = null;
+        });
+      }
+      setFrom("");
+      setMovableSquare(null);
+      setAttackerSquare(null);
       setPieceToMove(null);
     }
   };
+
+  useEffect(() => {
+    setChecksquare(kingCheckSquare);
+  }, [kingCheckSquare]);
 
   return (
     <div className="chessboard-container">
@@ -114,6 +162,11 @@ const ChessBoard = ({
                     } ${
                       attackSquare?.some((sq) => sq.row === i && sq.col === j)
                         ? "attack-square"
+                        : null
+                    }
+                    ${
+                      checkSquare?.row === i && checkSquare?.col === j
+                        ? "king-check-square"
                         : null
                     }`}
                     onClick={(e) => handleOnSquareClick(i, j, el)}

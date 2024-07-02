@@ -31,6 +31,19 @@ io.on("connection", (socket: Socket) => {
     gameManager.makeMove(message);
   });
 
+  socket.on(
+    "king-check",
+    (data: { row: string; col: string; roomId: string }) => {
+      gameManager.kingCheck(data);
+    }
+  );
+
+  socket.on(
+    "check-over",
+    (data: { row: string; col: string; roomId: string }) => {
+      gameManager.checkOver(data);
+    }
+  );
   // When user disconnects by clicking button
   socket.on("exiting-from-game", (roomId: string) => {
     gameManager.removeUser(roomId);

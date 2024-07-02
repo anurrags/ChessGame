@@ -77,6 +77,17 @@
   );
   border: 0.5px solid #131313;
 }
+
+.king-check-square {
+  background: rgb(255, 91, 134);
+  background: radial-gradient(
+    circle,
+    rgba(255, 91, 134, 1) 33%,
+    rgba(255, 46, 73, 1) 50%,
+    rgba(255, 91, 91, 1) 57%
+  );
+  border: 0.5px solid #131313;
+}
 /* Game.tsx stying */
 .header-heading {
   font-size: 3rem;

@@ -44,6 +44,20 @@ class GameManager {
       gameRoom.makeMove(move);
     }
   }
+
+  kingCheck(data: { row: string; col: string; roomId: string }) {
+    const gameRoom = this.games.get(data.roomId);
+    if (gameRoom) {
+      gameRoom.kingCheck(data.row, data.col);
+    }
+  }
+
+  checkOver(data: { row: string; col: string; roomId: string }) {
+    const gameRoom = this.games.get(data.roomId);
+    if (gameRoom) {
+      gameRoom.checkOver();
+    }
+  }
   removeUser(roomId: string) {
     const finishedGame = this.games.get(roomId);
     if (finishedGame) {

@@ -90,6 +90,16 @@ class GameRoom {
     }
   }
 
+  kingCheck(row: string, col: string) {
+    this.player1.socket.emit("king-check", { row: row, col: col });
+    this.player2?.socket.emit("king-check", { row: row, col: col });
+  }
+
+  checkOver() {
+    this.player1.socket.emit("check-over", "Check is over");
+    this.player2?.socket.emit("check-over", "Check is over");
+  }
+
   endGame() {
     this.player1.socket.emit("game-end", "Game ended");
     this.player2?.socket.emit("game-end", "Game ended");

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Socket } from "socket.io-client";
 import ChessBoard from "./chessboard/board";
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 import Connection from "../Utils/connection";
-import { move } from "../Utils/types";
+import { move, chessSquare } from "../Utils/types";
 
 const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
+
 const Game: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomId, setRoomId] = useState<string>("");
@@ -14,6 +15,9 @@ const Game: React.FC = () => {
   const [board, setBoard] = useState(chess.board());
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
+  const [kingCheckSquare, setKingCheckSquare] = useState<chessSquare | null>(
+    null
+  );
 
   const makeMove = ({
     from,
@@ -69,10 +73,21 @@ const Game: React.FC = () => {
     newSocket.on("game-over", (message: string) => {
       setGameStarted(false);
       alert(message);
-
       newSocket.disconnect();
     });
+
     newSocket.on("move", (move: move) => {
+      let audio;
+      console.log(chess.get(move.to as Square));
+
+      if (
+        chess.get(move.to as Square) &&
+        chess.get(move.to as Square).color !== color
+      ) {
+        audio = new Audio("/sounds/capture.mp3");
+      } else {
+        audio = new Audio("/sounds/move.mp3");
+      }
       try {
         const moved = chess.move({
           from: move.from,
@@ -80,13 +95,23 @@ const Game: React.FC = () => {
           promotion: move.promotion,
         });
         if (moved) {
+          audio.play();
           setBoard(chess.board());
-
           console.log(`Move ${move.from} to ${move.to}`);
         }
       } catch (error) {
         console.log(error);
       }
+    });
+
+    newSocket.on("king-check", (data: chessSquare) => {
+      const audio = new Audio("/sounds/notify.mp3");
+      audio.play();
+      setKingCheckSquare(data);
+    });
+
+    newSocket.on("check-over", (data: string) => {
+      setKingCheckSquare(null);
     });
 
     newSocket.on("connection-message", (message: string) => {
@@ -127,6 +152,9 @@ const Game: React.FC = () => {
           makeMove={makeMove}
           chess={chess}
           color={color}
+          socket={socket}
+          kingCheckSquare={kingCheckSquare}
+          roomId={roomId}
         />
         <div className="game-btn-div">
           {!gameStarted ? (
