@@ -58,12 +58,11 @@
   );
 }
 .moveable-square {
-  background: rgb(255, 91, 91);
   background: radial-gradient(
     circle,
-    rgba(255, 91, 91, 1) 7%,
-    rgba(255, 161, 161, 1) 41%,
-    rgba(255, 91, 91, 1) 73%
+    rgba(255, 255, 255, 1) 0%,
+    rgba(195, 255, 126, 1) 50%,
+    rgba(168, 255, 70, 1) 100%
   );
   border: 0.5px solid #131313;
 }
