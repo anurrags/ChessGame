@@ -37,8 +37,16 @@ const Game: React.FC = () => {
       return;
     }
     try {
+      let audio;
+
+      if (chess.get(to as Square) && chess.get(to as Square).color !== color) {
+        audio = new Audio("/sounds/capture.mp3");
+      } else {
+        audio = new Audio("/sounds/move.mp3");
+      }
       const move = chess.move({ from, to, promotion });
       if (move) {
+        audio.play();
         setBoard(chess.board());
         socket?.emit("move", {
           from: from,
@@ -78,7 +86,6 @@ const Game: React.FC = () => {
 
     newSocket.on("move", (move: move) => {
       let audio;
-      console.log(chess.get(move.to as Square));
 
       if (
         chess.get(move.to as Square) &&
