@@ -1,9 +1,11 @@
+import env from "dotenv";
 import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { gameRoom, move } from "./Utils/types";
+import { move } from "./Utils/types";
 import GameManager from "./modals/GameManager";
 
+env.config();
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -53,38 +55,7 @@ io.on("connection", (socket: Socket) => {
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`);
     gameManager.gameExited(socket);
-    //   try {
-    //     console.log(`User disconnected: ${socket.id}`);
-    //     const indexGameRoomToClose = findOneRoom(socket);
-    //     if (indexGameRoomToClose !== -1) {
-    //       const playerExited =
-    //         gameRoom[indexGameRoomToClose].player1 === socket
-    //           ? gameRoom[indexGameRoomToClose].player2
-    //           : gameRoom[indexGameRoomToClose].player1;
-    //       console.log(`Room ${indexGameRoomToClose} is closed`);
-    //       if (indexGameRoomToClose === gameRoom.length - 1)
-    //         isRoomAvailable = false;
-    //       if (playerExited)
-    //         socket
-    //           .to(playerExited.id)
-    //           .emit(
-    //             "room-closed",
-    //             `Room ${indexGameRoomToClose} closed because ${socket.id} exited}`
-    //           );
-    //       gameRoom.splice(indexGameRoomToClose, 1);
-    //       playerExited?.disconnect(true);
-    //     }
-    //   } catch (error) {
-    //     console.log(`Error: ${error}`);
-    //   }
-    // });
   });
-
-  // const findOneRoom = (socket: Socket) => {
-  //   return gameRoom.findIndex(
-  //     (room) => room.player1 === socket || room.player2 === socket
-  //   );
-  // };
 });
 const PORT = process.env.PORT || 9000;
 server.listen(PORT, () => {
