@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactHTMLElement } from "react";
 import { Socket } from "socket.io-client";
 import ChessBoard from "./chessboard/board";
 import { Chess, Square } from "chess.js";
@@ -18,6 +18,7 @@ const Game: React.FC = () => {
   const [kingCheckSquare, setKingCheckSquare] = useState<chessSquare | null>(
     null
   );
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const makeMove = ({
     from,
@@ -73,6 +74,7 @@ const Game: React.FC = () => {
         setColor(color);
         setRoomId(roomId);
         setKingCheckSquare(null);
+        setModalOpen(true);
         chess.reset();
         setBoard(chess.board());
       }
@@ -141,6 +143,10 @@ const Game: React.FC = () => {
     }
   };
 
+  const closeModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setModalOpen(false);
+  };
   useEffect(() => {
     if (!gameStarted) {
       setKingCheckSquare(null);
@@ -170,6 +176,16 @@ const Game: React.FC = () => {
           roomId={roomId}
           gameStarted={gameStarted}
         />
+        <div
+          className={`game-start-modal-container ${
+            modalOpen ? "modal-open" : "modal-close"
+          }`}
+        >
+          <h2>Opponent Joined</h2>
+          <h3>You are {color === "w" ? "White" : "Black"}</h3>
+          <p>All the best!</p>
+          <button onClick={closeModal}>Start</button>
+        </div>
         <div className="game-btn-div">
           {!gameStarted ? (
             <button

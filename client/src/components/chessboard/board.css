@@ -134,6 +134,41 @@
   background-color: rgb(218, 255, 225);
 }
 
+.game-start-modal-container {
+  position: absolute;
+  background-color: #fff;
+  box-sizing: border-box;
+  width: fit-content;
+  padding: 2rem;
+  border: 5px solid #000;
+}
+.modal-open {
+  display: block;
+}
+.modal-close {
+  display: none;
+}
+.game-start-modal-container h2 {
+  font-size: 3rem;
+}
+.game-start-modal-container h3 {
+  font-size: 2rem;
+}
+.game-start-modal-container p {
+  font-size: 1.4rem;
+}
+.game-start-modal-container button {
+  font-size: 1.4rem;
+  padding: 0.5rem 2rem;
+  background-color: rgba(91, 255, 100, 1);
+  border: 1px solid #000;
+  border-radius: 12px;
+}
+.game-start-modal-container button:hover {
+  color: #fff;
+  background-color: rgb(1, 119, 24);
+  cursor: pointer;
+}
 @media screen and (max-width: 1080px) {
   .chessboard-container {
     margin-top: 0;
@@ -142,6 +177,19 @@
     flex-direction: column-reverse;
     padding-top: 4rem;
     gap: 3rem;
+  }
+  .game-start-modal-container h2 {
+    font-size: 2.5rem;
+  }
+  .game-start-modal-container h3 {
+    font-size: 1.6rem;
+  }
+  .game-start-modal-container p {
+    font-size: 1rem;
+  }
+  .game-start-modal-container button {
+    font-size: 1rem;
+    padding: 0.5rem 2rem;
   }
 }
 @media (max-width: 680px) {
@@ -180,5 +228,24 @@
     left: 0.2rem;
     font-size: 0.8rem;
     font-weight: 600;
+  }
+
+  .game-start-modal-container {
+    padding: 1.4rem;
+    border: 3px solid #000;
+  }
+
+  .game-start-modal-container h2 {
+    font-size: 2rem;
+  }
+  .game-start-modal-container h3 {
+    font-size: 1.2rem;
+  }
+  .game-start-modal-container p {
+    font-size: 0.8rem;
+  }
+  .game-start-modal-container button {
+    font-size: 0.8rem;
+    padding: 0.5rem 1.5rem;
   }
 }
