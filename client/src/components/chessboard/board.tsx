@@ -5,6 +5,7 @@ import { chessSquare, possibleMoves } from "../../Utils/types";
 import { getAttackingSquares } from "../../Utils/getAttackingSquare";
 import { convertToChessNotation } from "../../Utils/getChessNotation";
 import { Socket } from "socket.io-client";
+import { KING_CHECK, KING_CHECK_OVER } from "../../Utils/constants";
 
 const ChessBoard = ({
   board,
@@ -64,7 +65,6 @@ const ChessBoard = ({
     const square = convertToChessNotation(i, j) as Square;
 
     if (from === "" && board[i][j]?.square == null) {
-      console.log("Select valid from square");
       return;
     }
     if (from === "" && el) {
@@ -83,7 +83,7 @@ const ChessBoard = ({
       setFrom(square);
     } else {
       if (checkSquare) {
-        socket?.emit("check-over", {
+        socket?.emit(KING_CHECK_OVER, {
           row: checkSquare.row,
           col: checkSquare.col,
           roomId: roomId,
@@ -118,11 +118,9 @@ const ChessBoard = ({
             chess.get(convertToChessNotation(sq.row, sq.col) as Square).type ===
             "k"
           ) {
-            console.log("king is check");
-
             kingCheckSquare = { row: sq.row, col: sq.col };
             setChecksquare(kingCheckSquare);
-            socket?.emit("king-check", {
+            socket?.emit(KING_CHECK, {
               row: sq.row,
               col: sq.col,
               roomId: roomId,

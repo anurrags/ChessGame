@@ -4,6 +4,17 @@ import ChessBoard from "./chessboard/board";
 import { Chess, Square } from "chess.js";
 import Connection from "../Utils/connection";
 import { move, chessSquare } from "../Utils/types";
+import {
+  CONNECTION_MESSAGE,
+  DISCONNECTION,
+  EXIT_GAME,
+  GAME_NOT_STARTED,
+  GAME_OVER,
+  GAME_START,
+  KING_CHECK,
+  KING_CHECK_OVER,
+  MOVE,
+} from "../Utils/constants";
 
 const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
 
@@ -30,11 +41,10 @@ const Game: React.FC = () => {
     promotion?: string;
   }) => {
     if (!gameStarted) {
-      alert("Game is not started");
+      alert(GAME_NOT_STARTED);
       return;
     }
     if (chess.turn() !== color) {
-      console.log("Not your turn");
       return;
     }
     try {
@@ -49,7 +59,7 @@ const Game: React.FC = () => {
       if (move) {
         audio.play();
         setBoard(chess.board());
-        socket?.emit("move", {
+        socket?.emit(MOVE, {
           from: from,
           to: to,
           promotion: promotion,
@@ -66,7 +76,7 @@ const Game: React.FC = () => {
     const newSocket = new Connection(serverUrl).socket;
     setSearching(true);
     newSocket.on(
-      "game-start",
+      GAME_START,
       ({ color, roomId }: { color: string; roomId: string }) => {
         console.log(`Game started. You are ${color}`);
         setGameStarted(true);
@@ -80,14 +90,14 @@ const Game: React.FC = () => {
       }
     );
 
-    newSocket.on("game-over", (message: string) => {
+    newSocket.on(GAME_OVER, (message: string) => {
       setGameStarted(false);
       setKingCheckSquare(null);
       alert(message);
       newSocket.disconnect();
     });
 
-    newSocket.on("move", (move: move) => {
+    newSocket.on(MOVE, (move: move) => {
       let audio;
 
       if (
@@ -113,24 +123,24 @@ const Game: React.FC = () => {
       }
     });
 
-    newSocket.on("king-check", (data: chessSquare) => {
+    newSocket.on(KING_CHECK, (data: chessSquare) => {
       const audio = new Audio("/sounds/notify.mp3");
       audio.play();
       setKingCheckSquare(data);
     });
 
-    newSocket.on("check-over", (data: string) => {
+    newSocket.on(KING_CHECK_OVER, (data: string) => {
       setKingCheckSquare(null);
     });
 
-    newSocket.on("connection-message", (message: string) => {
+    newSocket.on(CONNECTION_MESSAGE, (message: string) => {
       console.log(message);
     });
 
-    newSocket.on("disconnect", () => {
+    newSocket.on(DISCONNECTION, () => {
       setGameStarted(false);
       setColor("");
-      newSocket.emit("exiting-from-game", roomId);
+      newSocket.emit(EXIT_GAME, roomId);
       alert(`Disconnected from room ${roomId} because opponent exited`);
     });
     setSocket(newSocket);
@@ -138,7 +148,7 @@ const Game: React.FC = () => {
 
   const disConnectToServer = () => {
     if (socket) {
-      socket.emit("exiting-from-game", roomId);
+      socket.emit(EXIT_GAME, roomId);
       socket.disconnect();
     }
   };

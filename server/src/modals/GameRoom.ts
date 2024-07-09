@@ -1,7 +1,18 @@
-import { Socket } from "socket.io";
 import User from "./User";
-import { Chess } from "chess.js";
+import { BLACK, Chess } from "chess.js";
 import { move } from "../Utils/types";
+import {
+  GAME_DRAW_MESSAGE,
+  GAME_OVER,
+  GAME_STALEMATE_MESSAGE,
+  GAME_START,
+  GAME_THREEFOLD_DRAW_MESSAGE,
+  INSUFFICIENT_MATERIAL_MESSAGE,
+  KING_CHECK,
+  KING_CHECK_OVER,
+  MOVE,
+  WHITE,
+} from "../Utils/constants";
 
 class GameRoom {
   public roomId: string;
@@ -9,7 +20,6 @@ class GameRoom {
   public player2: User | null;
   private moves: move[];
   private chess: Chess;
-  private Board: string;
 
   constructor(roomId: string, player1: User) {
     this.roomId = roomId;
@@ -17,7 +27,6 @@ class GameRoom {
     this.player2 = null;
     this.moves = [];
     this.chess = new Chess();
-    this.Board = this.chess.ascii();
   }
   addFirstPlayer(player: User) {
     this.player1 = player;
@@ -28,11 +37,11 @@ class GameRoom {
 
   startGame() {
     if (this.player2) {
-      this.player1.socket.emit("game-start", {
+      this.player1.socket.emit(GAME_START, {
         color: "w",
         roomId: this.roomId,
       });
-      this.player2.socket.emit("game-start", {
+      this.player2.socket.emit(GAME_START, {
         color: "b",
         roomId: this.roomId,
       });
@@ -49,40 +58,36 @@ class GameRoom {
         promotion: move.promotion,
       });
       if (move.user === this.player1.socket.id && !(this.moves.length & 1)) {
-        this.player2?.socket.emit("move", move);
+        this.player2?.socket.emit(MOVE, move);
       } else if (
         move.user === this.player2?.socket.id &&
         this.moves.length & 1
       ) {
-        this.player1.socket.emit("move", move);
+        this.player1.socket.emit(MOVE, move);
       } else {
         throw new Error("Invalid move");
       }
       this.moves.push(move);
       if (this.chess.isDraw()) {
-        this.player1.socket.emit("game-over", "Game ended in a draw");
-        this.player2?.socket.emit("game-over", "Game ended in a draw");
+        this.player1.socket.emit(GAME_OVER, GAME_DRAW_MESSAGE);
+        this.player2?.socket.emit(GAME_OVER, GAME_DRAW_MESSAGE);
       } else if (this.chess.isStalemate()) {
-        this.player1.socket.emit("game-over", "Game ended in a stalemate");
-        this.player2?.socket.emit("game-over", "Game ended in a stalemate");
+        this.player1.socket.emit(GAME_OVER, GAME_STALEMATE_MESSAGE);
+        this.player2?.socket.emit(GAME_OVER, GAME_STALEMATE_MESSAGE);
       } else if (this.chess.isInsufficientMaterial()) {
-        this.player1.socket.emit("game-over", "Insufficient material");
-        this.player2?.socket.emit("game-over", "Insufficient material");
+        this.player1.socket.emit(GAME_OVER, INSUFFICIENT_MATERIAL_MESSAGE);
+        this.player2?.socket.emit(GAME_OVER, INSUFFICIENT_MATERIAL_MESSAGE);
       } else if (this.chess.isThreefoldRepetition()) {
-        this.player1.socket.emit("game-over", "Threefold repetition draw");
-        this.player2?.socket.emit("game-over", "Threefold repetition draw");
+        this.player1.socket.emit(GAME_OVER, GAME_THREEFOLD_DRAW_MESSAGE);
+        this.player2?.socket.emit(GAME_OVER, GAME_THREEFOLD_DRAW_MESSAGE);
       } else if (this.chess.isGameOver()) {
         this.player1.socket.emit(
-          "game-over",
-          `Checkmate ${
-            this.chess.turn() === "w" ? "black" : "white"
-          } is the winner`
+          GAME_OVER,
+          `Checkmate ${this.chess.turn() === "w" ? BLACK : WHITE} is the winner`
         );
         this.player2?.socket.emit(
-          "game-over",
-          `Checkmate ${
-            this.chess.turn() === "w" ? "black" : "white"
-          } is the winner`
+          GAME_OVER,
+          `Checkmate ${this.chess.turn() === "w" ? BLACK : WHITE} is the winner`
         );
       }
     } catch (error) {
@@ -91,31 +96,16 @@ class GameRoom {
   }
 
   kingCheck(row: string, col: string) {
-    this.player1.socket.emit("king-check", { row: row, col: col });
-    this.player2?.socket.emit("king-check", { row: row, col: col });
+    this.player1.socket.emit(KING_CHECK, { row: row, col: col });
+    this.player2?.socket.emit(KING_CHECK, { row: row, col: col });
   }
 
   checkOver() {
-    this.player1.socket.emit("check-over", "Check is over");
-    this.player2?.socket.emit("check-over", "Check is over");
+    this.player1.socket.emit(KING_CHECK_OVER, "Check is over");
+    this.player2?.socket.emit(KING_CHECK_OVER, "Check is over");
   }
 
   endGame() {
-    this.player1.socket.emit("game-end", "Game ended");
-    this.player2?.socket.emit("game-end", "Game ended");
-    this.player1.socket.disconnect(true);
-    this.player2?.socket.disconnect(true);
-  }
-
-  exitGame(player: User) {
-    this.player1.socket.emit(
-      "exit-game-end",
-      `Game ended because ${player.socket.id} exited unexpectedly`
-    );
-    this.player2?.socket.emit(
-      "exit-game-end",
-      `Game ended because ${player.socket.id} exited unexpectedly`
-    );
     this.player1.socket.disconnect(true);
     this.player2?.socket.disconnect(true);
   }

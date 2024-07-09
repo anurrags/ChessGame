@@ -3,6 +3,7 @@ import GameRoom from "./GameRoom";
 import User from "./User";
 import { randomUUID } from "crypto";
 import { move } from "../Utils/types";
+import { CONNECTION_MESSAGE } from "../Utils/constants";
 
 class GameManager {
   public games: Map<string, GameRoom>;
@@ -18,7 +19,7 @@ class GameManager {
 
   addUser(user: Socket) {
     const player = new User(user);
-    user.emit("connection-message", "Connected to the server");
+    user.emit(CONNECTION_MESSAGE, "Connected to the server");
     if (this.pendingRoomId === null) {
       this.pendingRoomId = randomUUID();
       this.users.set(player.socket.id, this.pendingRoomId);
@@ -58,12 +59,19 @@ class GameManager {
       gameRoom.checkOver();
     }
   }
+
   removeUser(roomId: string) {
     const finishedGame = this.games.get(roomId);
     if (finishedGame) {
       finishedGame.endGame();
-      this.games.delete(roomId);
+
+      this.users.delete(finishedGame.player1.socket.id);
+      if (finishedGame.player2) {
+        this.users.delete(finishedGame.player2.socket.id);
+      } else this.pendingRoomId = null;
+
       console.log(`Game Room ${roomId} removed`);
+      this.games.delete(roomId);
     }
   }
 
@@ -71,17 +79,7 @@ class GameManager {
     const roomId = this.users.get(socket.id);
 
     if (roomId) {
-      const gameRoom = this.games.get(roomId);
-      if (gameRoom) {
-        console.log(`Game Room ${roomId} closed`);
-        gameRoom.exitGame(new User(socket));
-        this.games.delete(roomId);
-        this.users.delete(gameRoom.player1.socket.id);
-        if (gameRoom.player2) {
-          this.users.delete(gameRoom.player2.socket.id);
-        } else this.pendingRoomId = null;
-      }
-      this.games.delete(roomId);
+      this.removeUser(roomId);
     }
   }
 }

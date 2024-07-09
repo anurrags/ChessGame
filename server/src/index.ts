@@ -4,6 +4,14 @@ import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { move } from "./Utils/types";
 import GameManager from "./modals/GameManager";
+import {
+  CONNECTION,
+  DISCONNECTION,
+  EXIT_GAME,
+  KING_CHECK,
+  KING_CHECK_OVER,
+  MOVE,
+} from "./Utils/constants";
 
 env.config();
 const app = express();
@@ -20,39 +28,34 @@ app.get("/", (req, res) => {
 
 const gameManager = new GameManager();
 
-io.on("connection", (socket: Socket) => {
+io.on(CONNECTION, (socket: Socket) => {
   console.log(`New user connected: ${socket.id}`);
   gameManager.addUser(socket);
 
-  socket.on("message", (message: string) => {
-    console.log(`Message from ${socket.id}: ${message}`);
-    io.emit("message", message);
-  });
-
-  socket.on("move", (message: move) => {
+  socket.on(MOVE, (message: move) => {
     gameManager.makeMove(message);
   });
 
   socket.on(
-    "king-check",
+    KING_CHECK,
     (data: { row: string; col: string; roomId: string }) => {
       gameManager.kingCheck(data);
     }
   );
 
   socket.on(
-    "check-over",
+    KING_CHECK_OVER,
     (data: { row: string; col: string; roomId: string }) => {
       gameManager.checkOver(data);
     }
   );
   // When user disconnects by clicking button
-  socket.on("exiting-from-game", (roomId: string) => {
+  socket.on(EXIT_GAME, (roomId: string) => {
     gameManager.removeUser(roomId);
   });
 
   // when user disconnects by closing window or due to any other unexpected events
-  socket.on("disconnect", () => {
+  socket.on(DISCONNECTION, () => {
     console.log(`User disconnected: ${socket.id}`);
     gameManager.gameExited(socket);
   });
