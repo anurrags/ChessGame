@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!assets|chessPiece|sounds|favicon|manifest|robots).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

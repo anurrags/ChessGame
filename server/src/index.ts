@@ -10,12 +10,21 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST"],
   },
 });
 
 app.get("/", (req, res) => {
-  res.send("Server is running");
+  res.send("Chess Game Server is running");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 const gameManager = new GameManager();
