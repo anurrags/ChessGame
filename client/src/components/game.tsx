@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactHTMLElement } from "react";
+import React, { useState, useEffect } from "react";
 import { Socket } from "socket.io-client";
 import ChessBoard from "./chessboard/board";
 import { Chess, Square } from "chess.js";
@@ -147,6 +147,7 @@ const Game: React.FC = () => {
     e.preventDefault();
     setModalOpen(false);
   };
+  
   useEffect(() => {
     if (!gameStarted) {
       setKingCheckSquare(null);
@@ -162,42 +163,48 @@ const Game: React.FC = () => {
   }, [socket]);
 
   return (
-    <div>
-      <h1 className="header-heading">Chess Game</h1>
-
-      <div className="game-container">
-        <ChessBoard
-          board={board}
-          makeMove={makeMove}
-          chess={chess}
-          color={color}
-          socket={socket}
-          kingCheckSquare={kingCheckSquare}
-          roomId={roomId}
-          gameStarted={gameStarted}
-        />
-        <div
-          className={`game-start-modal-container ${
-            modalOpen ? "modal-open" : "modal-close"
-          }`}
-        >
-          <h2>Opponent Joined</h2>
-          <h3>You are {color === "w" ? "White" : "Black"}</h3>
-          <p>All the best!</p>
-          <button onClick={closeModal}>Start</button>
+    <div className="game-container">
+      {/* Modals are better decoupled from flow */}
+      <div className={`modal-overlay ${modalOpen ? "modal-open" : ""}`}>
+        <div className="game-start-modal-content glass-panel">
+          <h2>Match Found</h2>
+          <h3>Playing as {color === "w" ? "White" : "Black"}</h3>
+          <p>Get ready for an intense match!</p>
+          <button className="game-btn" onClick={closeModal}>Battle Begin</button>
         </div>
+      </div>
+
+      <ChessBoard
+        board={board}
+        makeMove={makeMove}
+        chess={chess}
+        color={color}
+        socket={socket}
+        kingCheckSquare={kingCheckSquare}
+        roomId={roomId}
+        gameStarted={gameStarted}
+      />
+      
+      <div className="game-controls-panel glass-panel">
+        <div className="game-info">
+          <h2>Game Status</h2>
+          <div className={`status-badge ${gameStarted ? 'playing' : (searching ? 'waiting' : '')}`}>
+            {gameStarted ? "Match in Progress" : (searching ? "Searching Opponent..." : "Idle")}
+          </div>
+        </div>
+
         <div className="game-btn-div">
           {!gameStarted ? (
             <button
-              className={`${searching ? "disabled-btn" : "game-btn"} `}
+              className={`game-btn ${searching ? "disabled-btn" : ""}`}
               onClick={connectToServer}
               disabled={searching}
             >
-              {searching ? "Waiting for opponent" : "Play"}
+              {searching ? "Finding Match..." : "Play Online"}
             </button>
           ) : (
-            <button className="game-btn" onClick={disConnectToServer}>
-              Exit
+            <button className="game-btn" style={{background: 'var(--danger-color)'}} onClick={disConnectToServer}>
+              Resign Game
             </button>
           )}
         </div>
