@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css";
 import Game from "./components/game";
+import ChatWidget from "./components/chatwidget";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <main>
         <Game />
       </main>
+      <ChatWidget />
     </div>
   );
 }
