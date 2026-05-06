@@ -5,7 +5,7 @@ export default function ChatWidget() {
     const script = document.createElement('script');
     script.src = 'https://contexo-server.onrender.com/widget.js';
     script.async = true;
-    script.dataset.widgetId = 'dbda0757-b123-4cc2-820f-86853faa13ba';
+    script.dataset.widgetId = '3ffc2f97-261d-4f30-a6f4-2ba48487f9ac';
     document.body.appendChild(script);
 
     return () => {
